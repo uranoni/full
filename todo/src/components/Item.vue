@@ -1,5 +1,5 @@
 <template>
-  <li>{{task}}</li>
+  <li>{{task.text}}</li>
 </template>
 
 <script>

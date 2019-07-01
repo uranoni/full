@@ -1,8 +1,8 @@
 <template>
   <div>
     <Inp v-on:listen="pushto"></Inp>
-    <ul>
-      <Item v-for="(task,idx) in todo" :key="idx" :task="task"></Item>
+    <ul v-if="todo">
+      <Item v-for="task in todo" :key="task._id" :task="task" @click.native="removeItem(task)"></Item>
     </ul>
   </div>
 </template>
@@ -17,17 +17,40 @@ export default {
     Inp
   },
   mounted() {
-    
+    axios.get("/todos").then(({ data }) => {
+      this.todo = data;
+    });
   },
   data: () => {
     return {
-      todo: []
+      todo: null
     };
   },
   methods: {
     pushto(text) {
       console.log(text);
-      this.todo.push(text);
+
+      axios
+        .post("/create", { text })
+        .then(res => {
+          this.todo.push(res.data);
+          console.log(res.data);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    removeItem(task) {
+      axios
+        .delete(`/todo/${task._id}`)
+        .then(({ data }) => {
+          this.todo = this.todo.filter(el => {
+            return el._id != data._id;
+          });
+        })
+        .catch(err => {
+          console.log("error");
+        });
     }
   }
 };
