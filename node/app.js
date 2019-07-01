@@ -22,7 +22,21 @@ app.post("/create", async (req, res) => {
 });
 
 app.delete("/todo/:id", async (req, res) => {
-  const todo = await Todo.findByIdAndDelete(req.params.id);
+  try {
+    const todo = await Todo.findByIdAndDelete(req.params.id);
+    res.send(todo);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+app.patch("/update/:id", async (req, res) => {
+  const { text } = req.body;
+  const todo = await Todo.findByIdAndUpdate(
+    req.params.id,
+    { $set: { text } },
+    { new: true }
+  );
   res.send(todo);
 });
 
